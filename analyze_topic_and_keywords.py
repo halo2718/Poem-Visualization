@@ -1,9 +1,11 @@
 import os
 import sys
+import math
 import random
 import numpy as np
 import pandas as pd
 import tomotopy as tp
+from collections import Counter
 from tqdm import tqdm
 
 def analyze_topic_for_dynasty(topic_k=100):
@@ -36,4 +38,26 @@ def analyze_topic_for_dynasty(topic_k=100):
         print(csv_file, ranked_topic_index[:5])
     f.close()
 
-analyze_topic_for_dynasty()
+def tf_idf():
+    tf_dict = {}
+    df_dict = {}
+    document_num = 0
+    tf_idf_dict = {}
+    for txt_file in os.listdir('dataset/segmented'):
+        for line in tqdm(open(os.path.join('dataset/segmented', txt_file)).readlines()):
+            document_num += 1
+            line = line.strip().split()
+            line = [w for w in line if '□' not in w]
+            counter = Counter(line)
+            for word, num in counter.items():
+                tf_dict[word] = tf_dict.get(word, 0) + num/len(line)
+                df_dict[word] = df_dict.get(word, 0) + 1
+    for word in tf_dict.keys():
+        tf_idf_dict[word] = tf_dict[word] * math.log(document_num / df_dict[word])
+    tf_idf_dict_sorted = sorted(tf_idf_dict.items(), key=lambda kv:(kv[1], kv[0]), reverse=True)
+    with open('data/keywords.txt', 'w', encoding='utf-8') as f:
+        for word, tf_idf in tf_idf_dict_sorted[:500]:
+            f.write(word+'\n')
+
+# analyze_topic_for_dynasty()
+tf_idf()
