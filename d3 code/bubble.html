@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Assignment2</title>
+    <script src="d3.min.js"></script>
+    <script src="jquery-3.4.1.min.js"></script>
+</head>
+
+<body>
+    <svg width="1600" height="800" id="mainsvg" class="svgs"></svg>
+    <script>
+        // The following code is the typical routine of my d3.js code. 
+        const svg = d3.select('svg');
+        const width = svg.attr('width');
+        const height = svg.attr('height');
+        const margin = {top: 60, right: 30, bottom: 60, left: 150};
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+        const mainGroup = svg.append('g')
+        .attr('transform', `translate(${width / 2}, ${height / 2})`)
+        // const xValue = d => d.value;
+        // const yValue = d => d.name;
+        // const xScale = d3.scaleLinear();
+        // const yScale = d3.scaleBand();
+        var dynasty = 'Tang'
+        color = d3.scaleSequential(d3.interpolateRainbow)
+            .domain([0, 100])
+		/* 
+        Loading data and preprocessing data. 
+        Note that you can also preprocessing data in your own way using your prefered language, e.g., Python. 
+        */
+        const sim_init = function(){
+            bubbles = mainGroup
+                .selectAll("bubble")
+                .data(nodes)
+                .enter()
+                .append("circle")
+                // .attr("cx", d => d.x*innerWidth*0.8+margin.left)
+                // .attr("cy", d => d.y*innerHeight*0.8+margin.top)
+                .attr("r", d => d.score/3*innerHeight )
+                .style("fill", d => color(d.id))
+                .style("opacity", "0.7")
+                .attr("stroke", "black")
+                .attr("stroke-opacity", "0.7")
+            
+            labels = mainGroup
+                .selectAll("bubble-text")
+                .data(nodes)
+                .enter()
+                .append("text")
+                .text(d => d.id)
+                .attr('alignment-baseline', 'middle')
+                .style('font-size', d => (100*d.score+10)+'px')
+                // .attr("x", d => d.x*innerWidth*0.8+margin.left - 0.1*(1+(d.id+"").length)*d.score/3*innerHeight)
+                // .attr("y", d => d.y*innerHeight*0.8+margin.top + 0.05*d.score/3*innerHeight)
+                .style("fill", "black")
+                .style("opacity", "0.7")
+        }
+        function ticked() {
+            bubbles
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y);
+                // .attr('cx', d.x*innerWidth*0.8+margin.left - 0.1*(1+(d.id+"").length)*d.score/3*innerHeight)
+                // .attr('cy', d => d.y*innerHeight*0.8+margin.top + 0.05*d.score/3*innerHeight);
+            labels
+                .attr('x', d => d.x - 0.1*(1+(d.id+"").length)*d.score/3*innerHeight)
+                .attr('y', d => d.y + 0.05*d.score/3*innerHeight);
+        }
+        
+        d3.json('../data/bubble.json').then(data => {
+            // const context = DOM.context2d(width, height);
+            nodes = data[dynasty]
+            sim_init()
+            const simulation = d3.forceSimulation(nodes)
+                .alphaTarget(0.3) // stay hot
+                .velocityDecay(0.1) // low friction
+                .force("x", d3.forceX().strength(0.05))
+                .force("y", d3.forceY().strength(0.05))
+                .force("collide", d3.forceCollide().radius(d => d.r + 1).iterations(3))
+                .force("charge", d3.forceManyBody().strength(-width * 0.1))
+                .on('tick', ticked)
+            // mainGroup
+            //     .selectAll("bubble")
+            //     .data(data[dynasty])
+            //     .enter()
+            //     .append("circle")
+            //     .attr("cx", d => d.x*innerWidth*0.8+margin.left)
+            //     .attr("cy", d => d.y*innerHeight*0.8+margin.top)
+            //     .attr("r", d => d.score/3*innerHeight )
+            //     .style("fill", d => color(d.id))
+            //     .style("opacity", "0.7")
+            //     .attr("stroke", "black")
+            //     .attr("stroke-opacity", "0.7")
+            
+            // mainGroup
+            //     .selectAll("bubble-text")
+            //     .data(data[dynasty])
+            //     .enter()
+            //     .append("text")
+            //     .text(d => d.id)
+            //     .attr('alignment-baseline', 'middle')
+            //     .style('font-size', d => (100*d.score+10)+'px')
+            //     .attr("x", d => d.x*innerWidth*0.8+margin.left - 0.1*(1+(d.id+"").length)*d.score/3*innerHeight)
+            //     .attr("y", d => d.y*innerHeight*0.8+margin.top + 0.05*d.score/3*innerHeight)
+            //     .style("fill", "black")
+            //     .style("opacity", "0.7")
+		})
+        
+
+    </script> 
+</body>
+
+</html>
