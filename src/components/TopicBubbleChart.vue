@@ -2,7 +2,7 @@
   <div ref="resizeRef">
     <svg
       ref="svgRef"
-      style="min-height: 300px; overflow: hidden; background-color: white"
+      style="min-height: 500px; overflow: hidden; background-color: white"
     >
       <g class="x-axis" />
       <g class="y-axis" />
@@ -85,15 +85,15 @@ export default {
             initialSelectedTopics.includes(item.id),
           ])
         );
-        console.log(initialSelectedTopics);
-        console.log(selected);
+        // console.log(initialSelectedTopics);
+        // console.log(selected);
         const onClick = (e) => {
           const id = e.target.__data__.id;
           selected[id] = !selected[id];
           d3.select('#bubble' + id)
             .transition()
             .duration(300)
-            .style('opacity', selected[id] ? '1' : '0.3');
+            .style('opacity', selected[id] ? '1' : '0.2');
           d3.select('#bubble-text' + id)
             .transition()
             .duration(300)
@@ -111,7 +111,7 @@ export default {
             .attr('cy', (d) => d.y * innerHeight * 0.8)
             .attr('r', (d) => d.score * 0.3 * innerHeight)
             .style('fill', (d) => color(d.id))
-            .style('opacity', (d) => (selected[d.id] ? '1' : '0.3'))
+            .style('opacity', (d) => (selected[d.id] ? '1' : '0.2'))
             .on('click', onClick);
 
           labels = mainGroup

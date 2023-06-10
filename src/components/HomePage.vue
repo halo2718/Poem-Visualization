@@ -36,6 +36,17 @@
               </template>
               <topic-view :selected-topics="selectedTopics" />
             </el-card>
+            <el-card class="bubble-card">
+              <template #header>
+                <div class="card-header">
+                  <h3>主题河流图</h3>
+                </div>
+              </template>
+              <TopicTrendStreamChart
+                :dynasty="dynasties[dynastyIndex][1]"
+                :selected-topics="selectedTopics"
+              />
+            </el-card>
           </div>
         </el-col>
       </el-row>
@@ -46,6 +57,7 @@
 <script>
 import DynastyBar from './DynastyBar.vue';
 import TopicBubbleChart from './TopicBubbleChart.vue';
+import TopicTrendStreamChart from './TopicTrendStreamChart.vue';
 import TopicView from './TopicView.vue';
 
 export default {
@@ -54,7 +66,8 @@ export default {
     DynastyBar,
     TopicBubbleChart,
     TopicView,
-  },
+    TopicTrendStreamChart
+},
   data() {
     return {
       dynasties: [
