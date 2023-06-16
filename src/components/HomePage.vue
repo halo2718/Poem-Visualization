@@ -10,12 +10,12 @@
         </el-col>
       </el-row>
       <el-row :gutter="20" class="charts">
-        <el-col :span="12">
+        <el-col :span="8">
           <div class="grid-content">
-            <el-card class="bubble-card">
+            <el-card class="bubble first chart">
               <template #header>
                 <div class="card-header">
-                  <h3>气泡图</h3>
+                  <h3>主题气泡图</h3>
                 </div>
               </template>
               <TopicBubbleChart
@@ -24,11 +24,7 @@
                 @click-topic="onTopicToggle"
               />
             </el-card>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="grid-content">
-            <el-card>
+            <el-card class="chart">
               <template #header>
                 <div class="card-header">
                   <h3>已选中的主题</h3>
@@ -36,16 +32,61 @@
               </template>
               <topic-view :selected-topics="selectedTopics" />
             </el-card>
-            <el-card class="bubble-card">
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="grid-content">
+            <el-card class="keyword-rank first chart">
               <template #header>
                 <div class="card-header">
-                  <h3>主题河流图</h3>
+                  <h3>意象排序图</h3>
                 </div>
               </template>
-              <TopicTrendStreamChart
+              <KeywordsRankChart
                 :dynasty="dynasties[dynastyIndex][1]"
-                :selected-topics="selectedTopics"
+                :selected-keywords="selectedKeywords"
+                @click-keyword="onKeywordToggle"
               />
+            </el-card>
+            <el-card class="chart">
+              <template #header>
+                <div class="card-header">
+                  <h3>已选中的意象</h3>
+                </div>
+              </template>
+              <keyword-view :selected-keywords="selectedKeywords" />
+            </el-card>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="grid-content">
+            <el-card class="menu first chart">
+              <el-menu
+                :default-active="activeIndex"
+                class="el-menu-demo"
+                mode="horizontal"
+                :ellipsis="false"
+                @select="handleSelect"
+              >
+                <el-menu-item index="1"><h3>主题河流图</h3></el-menu-item>
+                <el-menu-item index="2"><h3>主题-意向关联图</h3></el-menu-item>
+                <el-menu-item index="3"><h3>意向-意向关联图</h3></el-menu-item>
+              </el-menu>
+              <div v-if="activeIndex == 1" class="topic-stream submenu">
+                <TopicTrendStreamChart
+                  :dynasty="dynasties[dynastyIndex][1]"
+                  :selected-topics="selectedTopics"
+                />
+              </div>
+              <div v-if="activeIndex == 2" class="sankey submenu">
+                <SankeyChart
+                  :selected-topics="selectedTopics"
+                  :selected-keywords="selectedKeywords"
+                />
+              </div>
+              <div v-if="activeIndex == 3" class="sankey submenu">
+                <KeywordsChordChart :selected-keywords="selectedKeywords" />
+              </div>
             </el-card>
           </div>
         </el-col>
@@ -56,9 +97,13 @@
 
 <script>
 import DynastyBar from './DynastyBar.vue';
+import KeywordsRankChart from './KeywordsRankChart.vue';
+import SankeyChart from './SankeyChart.vue';
 import TopicBubbleChart from './TopicBubbleChart.vue';
 import TopicTrendStreamChart from './TopicTrendStreamChart.vue';
 import TopicView from './TopicView.vue';
+import KeywordView from './KeywordView.vue';
+import KeywordsChordChart from './KeywordsChordChart.vue';
 
 export default {
   name: 'HomePage',
@@ -66,8 +111,12 @@ export default {
     DynastyBar,
     TopicBubbleChart,
     TopicView,
-    TopicTrendStreamChart
-},
+    KeywordView,
+    TopicTrendStreamChart,
+    KeywordsRankChart,
+    SankeyChart,
+    KeywordsChordChart,
+  },
   data() {
     return {
       dynasties: [
@@ -89,6 +138,8 @@ export default {
       ],
       dynastyIndex: 0,
       selectedTopics: [],
+      selectedKeywords: [],
+      activeIndex: 1,
     };
   },
   methods: {
@@ -101,6 +152,20 @@ export default {
         topics.push(v);
       }
       this.selectedTopics = [...topics];
+    },
+    onKeywordToggle(v) {
+      let keywords = this.selectedKeywords;
+      if (keywords.includes(v)) {
+        const idx = keywords.findIndex((item) => item === v);
+        keywords.splice(idx, 1);
+      } else {
+        keywords.push(v);
+      }
+      this.selectedKeywords = [...keywords];
+      console.log(this.selectedKeywords);
+    },
+    handleSelect(idx) {
+      this.activeIndex = idx;
     },
   },
 };
@@ -125,7 +190,28 @@ export default {
   padding-bottom: 0 !important;
 }
 
-.bubble-card .el-card__body {
+.chart {
+  margin-top: 20px;
+}
+
+.first.chart {
+  margin-top: 0;
+}
+
+.menu.chart .el-card__body {
   padding: 0 !important;
+}
+
+h3 {
+  font-size: 16px !important;
+}
+
+.menu.chart .el-menu-item h3 {
+  margin-block-start: -1px;
+  margin-block-end: -1px;
+}
+
+.submenu {
+  padding: 20px;
 }
 </style>

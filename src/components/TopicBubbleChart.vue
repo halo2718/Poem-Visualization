@@ -2,7 +2,7 @@
   <div ref="resizeRef">
     <svg
       ref="svgRef"
-      style="min-height: 500px; overflow: hidden; background-color: white"
+      style="min-height: 400px; overflow: hidden; background-color: white"
     >
       <g class="x-axis" />
       <g class="y-axis" />
