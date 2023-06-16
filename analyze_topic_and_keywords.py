@@ -160,10 +160,25 @@ def keywords_analysis():
         json.dump(keyword_freq, f, ensure_ascii=False, indent=4)
     with open('data/keywords_co_occurance.json', 'w', encoding='utf-8') as f:
         json.dump(keyword_co_occurance_freq, f, ensure_ascii=False, indent=4)
-        
+
+def wordcloud(topic_k=100):
+    res = {}
+    model = tp.LDAModel.load(f'model/topic_model/lda_{topic_k}.bin')
+    for k in range(model.k):
+        topic_res = []
+        for (w, prob) in model.get_topic_words(k, top_n=50):
+            topic_res.append({
+                'word': w,
+                'prob': prob
+            })
+        res[k] = topic_res
+    with open('data/wordcloud.json', 'w', encoding='utf-8') as f:
+        json.dump(res, f, ensure_ascii=False, indent=4)
+
 # analyze_topic_for_dynasty()
 # tf_idf()
 # get_topic_data()
 # dynasty_keywords_analysis()
 # topic_keywords_analysis()
-keywords_analysis()
+# keywords_analysis()
+wordcloud()

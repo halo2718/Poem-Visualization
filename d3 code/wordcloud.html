@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Assignment2</title>
+    <script src="d3.min.js"></script>
+    <script src="jquery-3.4.1.min.js"></script>
+    <!-- <script src="https://d3js.org/d3.v4.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
+
+</head>
+
+<body>
+    <svg width="1600" height="800" id="mainsvg" class="svgs"></svg>
+    <script>
+        // The following code is the typical routine of my d3.js code. 
+        const svg = d3.select('svg');
+        const width = svg.attr('width');
+        const height = svg.attr('height');
+        const margin = {top: 60, right: 30, bottom: 60, left: 150};
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+        const mainGroup = svg.append('g')
+        .attr('transform', `translate(${margin.left}, ${margin.top})`)
+        // const xValue = d => d.value;
+        // const yValue = d => d.name;
+        // const xScale = d3.scaleLinear();
+        // const yScale = d3.scaleBand();
+        var dynasty = 'Tang'
+        color = d3.scaleSequential(d3.interpolateCool)
+            .domain([0, 100])
+        var layout = d3.layout.cloud()
+        function draw(words) {
+            console.log(words)
+            mainGroup.append("g")
+            .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+            .selectAll("text")
+                .data(words)
+            .enter().append("text")
+                .style("font-size", function(d) { return d.size; })
+                .style("fill", d => color(Math.random()*100))
+                .attr("text-anchor", "middle")
+                .style("font-family", "Impact")
+                .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function(d) { return d.text; });
+        }
+        var topic = 72
+        d3.json('../data/wordcloud.json').then(data => {
+            words = data[topic]
+            layout
+                .size([innerWidth, innerHeight])
+                .words(words.map(function(d) { return {text: d.word, size:d.prob*10000}; }))
+                .padding(5)        //space between words
+                .rotate(function() { return 0; })
+                .fontSize(function(d) { return d.size; })      // font size of words
+                .on("end", draw);
+            layout.start();
+        })
+    </script> 
+</body>
+
+</html>
