@@ -39,7 +39,7 @@
             <el-card class="keyword-rank first chart">
               <template #header>
                 <div class="card-header">
-                  <h3>意象排序图</h3>
+                  <h3>意象情感柱状图</h3>
                 </div>
               </template>
               <KeywordsRankChart
@@ -69,8 +69,8 @@
                 @select="handleSelect"
               >
                 <el-menu-item index="1"><h3>主题河流图</h3></el-menu-item>
-                <el-menu-item index="2"><h3>主题-意向关联图</h3></el-menu-item>
-                <el-menu-item index="3"><h3>意向-意向关联图</h3></el-menu-item>
+                <el-menu-item index="2"><h3>主题-意象关联图</h3></el-menu-item>
+                <el-menu-item index="3"><h3>意象-意象关联图</h3></el-menu-item>
               </el-menu>
               <div v-if="activeIndex == 1" class="topic-stream submenu">
                 <TopicTrendStreamChart
@@ -88,6 +88,21 @@
                 <KeywordsChordChart :selected-keywords="selectedKeywords" />
               </div>
             </el-card>
+            <el-card class="chart">
+              <template #header>
+                <div class="card-header">
+                  <h3>
+                    主题词云图
+                    {{
+                      selectedTopics.length == 0
+                        ? ' '
+                        : ' - ' + selectedTopics[selectedTopics.length - 1]
+                    }}
+                  </h3>
+                </div>
+              </template>
+              <WordCloudChart :selected-topics="selectedTopics" />
+            </el-card>
           </div>
         </el-col>
       </el-row>
@@ -104,6 +119,7 @@ import TopicTrendStreamChart from './TopicTrendStreamChart.vue';
 import TopicView from './TopicView.vue';
 import KeywordView from './KeywordView.vue';
 import KeywordsChordChart from './KeywordsChordChart.vue';
+import WordCloudChart from './WordCloudChart.vue';
 
 export default {
   name: 'HomePage',
@@ -116,6 +132,7 @@ export default {
     KeywordsRankChart,
     SankeyChart,
     KeywordsChordChart,
+    WordCloudChart,
   },
   data() {
     return {
